@@ -19,4 +19,11 @@
     url = "https://github.com/colemickens/nixpkgs-wayland/archive/master.tar.gz";
     unpack = true;
   };
+
+  nix = {
+    type = "git";
+    url = "https://github.com/nixos/nix.git";
+    rev = "841fcbd04755c7a2865c51c1e2d3b045976b7452";
+    ref = "1.11-maintenance";
+  };
 }

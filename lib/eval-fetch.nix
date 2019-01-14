@@ -52,8 +52,10 @@ let
         };
       };
 
-    # TODO
-    git = { url, hash, meta, passthru }: x;
+    git = { url, ref ? null, rev ? "HEAD", hash, meta, passthru }@attrs:
+      mkFetcher attrs (fetchGit {
+        inherit url ref rev;
+      });
   };
 
   # extract the sha256 of a SRI-hash
