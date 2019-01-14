@@ -17,29 +17,49 @@ abort() {
 
 ### functions ###
 
+# Usage: nix-path help [command]
+#
+# Shows the help overview.
+#
+# If a <command> is passed, it shows the documentation of that command.
 cmd-help() {
-  cat <<USAGE
+  if [[ $# = 0 ]]; then
+    cat <<USAGE
 Usage: nix-path <command> [opts]
 
 Commands:
 * NIX_PATH
 * add <name> <url> [opts] - TODO
 * eval [--json]
-* help
+* help [command]
 * init
 * repl
-* run <command> [...args]
+* run [<command> [...args]]
 * shell
 * show [--json]
 * update [...<name>] - TODO
 * version
 USAGE
+  else
+    grep \
+      --null-data \
+      --only-matching \
+      --perl-regexp \
+      --regexp="(?s)# Usage: nix-path $1\N*(.#\N*)+" \
+      "${BASH_SOURCE[0]}" | sed 's/^# *//'
+  fi
 }
 
+# Usage: nix-path NIX_PATH
+#
+# Display the calculated value of NIX_PATH
 cmd-NIX_PATH() {
   cmd-eval --json | jq -r '[ to_entries[] | "\(.key)=\(.value)" ] | join(":")'
 }
 
+# Usage: nix-path init
+#
+# Setups the project for nix-path, creates the ./nix-path.nix file
 cmd-init() {
   if [[ -f "${source_file}" ]]; then
     abort "${source_file} already exists"
@@ -51,28 +71,50 @@ cmd-init() {
 INIT
 }
 
+# Usage: nix-path show [--json]
+#
+# Display the nix-path.nix content
 cmd-show() {
   nix-instantiate --strict --eval "${source_file}" "$@"
 }
 
+# Usage: nix-path eval [--json]
+#
+# Display the evaluated nix-path.nix content
 cmd-eval() {
   nix-instantiate --strict --eval "${eval_nix}" --arg "path" "${source_file}" "$@"
 }
 
+# Usage: nix-path repl [...nix-repl-args]
+#
+# Run the nix repl with the proper NIX_PATH set
 cmd-repl() {
   cmd-run nix repl "$@"
 }
 
+# Usage: nix-path run <command> [...args]
+#
+# Run the command with NIX_PATH set
 cmd-run() {
   NIX_PATH=$(cmd-NIX_PATH)
   export NIX_PATH
-  exec -- "$@"
+  if [[ $# = 0 ]]; then
+    exec bash
+  else
+    exec -- "$@"
+  fi
 }
 
+# Usage: nix-path shell [...nix-shell-args]
+#
+# Load the nix-shell with NIX_PATH set
 cmd-shell() (
   cmd-run nix-shell "$@"
 )
 
+# Usage: nix-path version
+#
+# Display the nix-path version
 cmd-version() {
   echo "version 0.0.0"
 }

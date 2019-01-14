@@ -1,5 +1,7 @@
 # nix-path - manage your NIX_PATH
 
+Status: *experimental*
+
 When managing a monorepo, it often happens that one wants to load external
 sources. Having them scattered all over the repo can make it quickly difficult
 to handle and update them.
@@ -14,6 +16,7 @@ It also does a few other related things like:
 
 ## Dependencies
 
+* `gnugrep`
 * `jq`
 * `nix` >= 2.2
 
