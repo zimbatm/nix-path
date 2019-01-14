@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+#
+# Usage: nix-path <command> [opts]
+set -euo pipefail
+
+### defaults ###
+
+eval_nix=$(dirname "$(dirname "${BASH_SOURCE[0]}")")/lib/eval-nix-path.nix
+source_file=${NIX_SOURCE:-./nix-path.nix}
+
+### utils ###
+
+abort() {
+  echo "abort: $*" >&2
+  exit 1
+}
+
+### functions ###
+
+cmd-help() {
+  cat <<USAGE
+Usage: nix-path <command> [opts]
+
+Commands:
+* NIX_PATH
+* add <name> <url> [opts] - TODO
+* eval [--json]
+* help
+* init
+* repl
+* run <command> [...args]
+* shell
+* show [--json]
+* update [...<name>] - TODO
+* version
+USAGE
+}
+
+cmd-NIX_PATH() {
+  cmd-eval --json | jq -r '[ to_entries[] | "\(.key)=\(.value)" ] | join(":")'
+}
+
+cmd-init() {
+  if [[ -f "${source_file}" ]]; then
+    abort "${source_file} already exists"
+  fi
+
+  cat <<INIT > "${source_file}"
+  # nix-path configuration file
+  {}
+INIT
+}
+
+cmd-show() {
+  nix-instantiate --strict --eval "${source_file}" "$@"
+}
+
+cmd-eval() {
+  nix-instantiate --strict --eval "${eval_nix}" --arg "path" "${source_file}" "$@"
+}
+
+cmd-repl() {
+  cmd-run nix repl "$@"
+}
+
+cmd-run() {
+  NIX_PATH=$(cmd-NIX_PATH)
+  export NIX_PATH
+  exec -- "$@"
+}
+
+cmd-shell() (
+  cmd-run nix-shell "$@"
+)
+
+cmd-version() {
+  echo "version 0.0.0"
+}
+
+### main ###
+
+main() {
+  local cmd=${1:-}
+  if [[ $# -gt 0 ]]; then
+    shift
+  fi
+
+  case "$cmd" in
+    help | -h | --help)
+      cmd-help "$@"
+      ;;
+    version | --version)
+      cmd-version "$@"
+      ;;
+    "")
+      abort "no command given, use --help for more info"
+      ;;
+    *)
+      if [[ $(type -t "cmd-$cmd") = function ]]; then
+        "cmd-$cmd" "$@"
+      else
+        abort "unknown command '$cmd', use --help for more info"
+      fi
+      ;;
+  esac
+}
+
+main "$@"
