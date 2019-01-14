@@ -41,14 +41,14 @@ let
       assert (typeOf hash == "null");
       mkFetcher attrs path;
 
-    github = { owner, repo, rev, hash, meta, passthru }@spec:
+    github = { owner, repo, rev, hash, meta, passthru }@attrs:
       mkFetcher attrs (fetchurl' {
         url = "https://github.com/${owner}/${repo}/archive/${rev}.tar.gz";
         unpack = true;
         hash = hash;
       }) // {
         meta = meta // {
-          homepage = "https://github.com/${spec.owner}/${spec.repo}";
+          homepage = "https://github.com/${owner}/${repo}";
         };
       };
 
