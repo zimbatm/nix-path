@@ -3,11 +3,9 @@
     type = "github";
     owner = "nixos";
     repo = "nixpkgs-channels";
-    rev = "626233eee6ea309733d2d98625750cca904799a5";
+    ref = "626233eee6ea309733d2d98625750cca904799a5";
+    rev = "nixos-unstable";
     hash = "sha256-0w1s5v96cdf57f2wzqrkxfz6bhdb6h2axjv3r8l7p8pf4kdwdky2";
-    meta = {
-      channel = "nixos-unstable";
-    };
   };
 
   home-manager = {

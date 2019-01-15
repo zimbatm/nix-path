@@ -41,9 +41,9 @@ let
       assert (typeOf hash == "null");
       mkFetcher attrs path;
 
-    github = { owner, repo, rev, hash, meta, passthru }@attrs:
+    github = { owner, repo, ref ? rev, rev, hash, meta, passthru }@attrs:
       mkFetcher attrs (fetchurl' {
-        url = "https://github.com/${owner}/${repo}/archive/${rev}.tar.gz";
+        url = "https://github.com/${owner}/${repo}/archive/${ref}.tar.gz";
         unpack = true;
         hash = hash;
       }) // {
@@ -52,7 +52,7 @@ let
         };
       };
 
-    git = { url, ref ? null, rev ? "HEAD", hash, meta, passthru }@attrs:
+    git = { url, ref ? rev, rev ? "HEAD", hash, meta, passthru }@attrs:
       mkFetcher attrs (fetchGit {
         inherit url ref rev;
       });
