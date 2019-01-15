@@ -43,6 +43,7 @@ let
 
     github = { owner, repo, ref ? rev, rev, hash, meta, passthru }@attrs:
       mkFetcher attrs (fetchurl' {
+        name = "${owner}-${repo}-${rev}";
         url = "https://github.com/${owner}/${repo}/archive/${ref}.tar.gz";
         unpack = true;
         hash = hash;
@@ -54,6 +55,7 @@ let
 
     git = { url, ref ? rev, rev ? "HEAD", hash, meta, passthru }@attrs:
       mkFetcher attrs (fetchGit {
+        name = baseNameOf url;
         inherit url ref rev;
       });
   };
@@ -68,13 +70,18 @@ let
 
   # a version of fetchurl that ressembles more <nix/fetchurl.nix>
   fetchurl' =
-    { url, hash ? null, unpack ? false, ... }:
+    { url
+    , name ? baseNameOf url
+    , hash ? null
+    , unpack ? false
+    , ...
+    }:
     (if unpack then fetchTarball else fetchurl)
     (
-    { inherit url; }
-    // (if hash == null then {} else {
-      sha256 = getSHA256 hash;
-    }));
+      { inherit name url; }
+      // (if hash == null then {} else {
+        sha256 = getSHA256 hash;
+      }));
 
   # all fetchers can be converted to their outPath, just like derivations
   mkFetcher = attrs: outPath: attrs // {

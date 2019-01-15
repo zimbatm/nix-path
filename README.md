@@ -51,7 +51,6 @@ UNIX philosophy of building small composable tools.
 
 ## TODO
 
-* give good names to sources
 * finalize the universal fetcher interface
 * implement derivation fetchers with the same interface
 * design the updater interface
