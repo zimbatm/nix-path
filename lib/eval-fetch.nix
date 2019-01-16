@@ -35,12 +35,6 @@ let
       assert (typeOf url == "string");
       mkFetcher attrs (fetchurl' attrs);
 
-    # mostly useful for temporary overrides
-    path = { path, hash, meta, passthru }@attrs:
-      # it doesn't make sense to have a hash here
-      assert (typeOf hash == "null");
-      mkFetcher attrs path;
-
     github = { owner, repo, ref ? rev, rev, hash, meta, passthru }@attrs:
       mkFetcher attrs (fetchurl' {
         name = "${owner}-${repo}-${rev}";
