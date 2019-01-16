@@ -16,6 +16,7 @@ It also does a few other related things like:
 
 ## Dependencies
 
+* `bash` >= 4
 * `gnugrep`
 * `jq`
 * `nix` >= 2.2
