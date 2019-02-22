@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
+# Manage your NIX_PATH
 #
-# Usage: nix-path <command> [opts]
+# Usage:
+#   nix-path NIX_PATH
+#   nix-path add <name> <url> [opts] - TODO
+#   nix-path eval [--json]
+#   nix-path help [command]
+#   nix-path init
+#   nix-path repl
+#   nix-path run [<command> [...args]]
+#   nix-path shell
+#   nix-path show [--json]
+#   nix-path update [...<name>] - TODO
+#   nix-path version
+#
 set -euo pipefail
 
 ### defaults ###
@@ -17,6 +30,20 @@ abort() {
 
 ### functions ###
 
+# utility to extrace the usage from the script header
+script_usage() {
+  local line
+  read -r _ # ignore the shebang
+  while IFS=$'\n' read -r line; do
+    if [[ $line != "#"* ]]; then
+      break
+    fi
+    line=${line###}
+    line=${line## }
+    echo "$line"
+  done
+}
+
 # Usage: nix-path help [command]
 #
 # Shows the help overview.
@@ -24,22 +51,7 @@ abort() {
 # If a <command> is passed, it shows the documentation of that command.
 cmd-help() {
   if [[ $# = 0 ]]; then
-    cat <<USAGE
-Usage: nix-path <command> [opts]
-
-Commands:
-* NIX_PATH
-* add <name> <url> [opts] - TODO
-* eval [--json]
-* help [command]
-* init
-* repl
-* run [<command> [...args]]
-* shell
-* show [--json]
-* update [...<name>] - TODO
-* version
-USAGE
+    script_usage < "$0"
   else
     grep \
       --null-data \
