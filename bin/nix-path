@@ -8,10 +8,10 @@
 #   nix-path help [command]
 #   nix-path init
 #   nix-path repl
-#   nix-path run [<command> [...args]]
+#   nix-path run [<command> [<arg>...]]
 #   nix-path shell
 #   nix-path show [--json]
-#   nix-path update [...<name>] - TODO
+#   nix-path update [<name>...] - TODO
 #   nix-path version
 #
 set -euo pipefail
@@ -97,14 +97,14 @@ cmd-eval() {
   nix-instantiate --strict --eval "${eval_nix}" --arg "path" "${source_file}" "$@"
 }
 
-# Usage: nix-path repl [...nix-repl-args]
+# Usage: nix-path repl [<nix-repl-arg>...]
 #
 # Run the nix repl with the proper NIX_PATH set
 cmd-repl() {
   cmd-run nix repl "$@"
 }
 
-# Usage: nix-path run <command> [...args]
+# Usage: nix-path run <command> [<arg>...]
 #
 # Run the command with NIX_PATH set
 cmd-run() {
@@ -117,7 +117,7 @@ cmd-run() {
   fi
 }
 
-# Usage: nix-path shell [...nix-shell-args]
+# Usage: nix-path shell [<nix-shell-arg>...]
 #
 # Load the nix-shell with NIX_PATH set
 cmd-shell() (
